@@ -3,6 +3,7 @@ console.log(args);
 When you drink this potion, it cures any disease afflicting you, and it removes the  blinded,  deafened,  paralyzed, and  poisoned conditions.
 */
 
+
 // applying potion only to the first target
 targetEffects = args[0].targets[0].data.actorData.effects;
 targetUuid = args[0].targetUuids[0];

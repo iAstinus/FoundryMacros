@@ -2,6 +2,7 @@
 When you drink this potion, you regain an expended 1st level spell slot.
 */ 
 
+
 // just in case: defining spell level to restore
 const levelToRestore = "spell" + 1;
 let actor = game.actors.get(args[0].actor._id);
