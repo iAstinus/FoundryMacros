@@ -1,12 +1,12 @@
 // Kekilla's Font of Magic script fixed.
-// console.log('----------Point START-------------');
+console.log('----------Point START-------------');
 let log = (...args) => console.log("Sorcery Point Macro | ", ...args);
 let wait = async (ms) => new Promise((resolve)=> setTimeout(resolve, ms));
 // let macroActor = game.actors.get(args[0].actor._id);
 let macroActor = game.actors.get(game.user.data.character);
 // console.log(macroActor)
 let data = { items : [], spellSlots : [], sorcPoints : {}, cost : [2,3,5,6,7], spellDiff : false, pointDiff : false};
-// console.log(data);
+console.log(data);
 let display_message = true;
 let dialog_id = randomID();
 
@@ -35,7 +35,8 @@ async function dataCheck()
     "Metamagic - Heightened Spell", 
     "Metamagic - Quickened Spell", 
     "Metamagic - Subtle Spell", 
-    "Metamagic - Twinned Spell"
+    "Metamagic - Twinned Spell",
+    "Magical Guidance"
   ];
 
   if(!macroActor) return error(`No Actor Selected (Character or Token)`);
@@ -147,6 +148,7 @@ async function updateDialog()
                             ${(data.sorcPoints.value > 1 && checkAction(`Metamagic - Quickened Spell`)) ? `<option ${action === `quickened` ? `selected` : ``} value="quickened">Quickened Spell</option>` : ``}
                             ${(data.sorcPoints.value > 1 && checkAction(`Metamagic - Subtle Spell`)) ? `<option ${action === `subtle` ? `selected` : ``} value="subtle">Subtle Spell</option>` : ``}
                             ${(data.sorcPoints.value > 0 && checkAction(`Metamagic - Twinned Spell`)) ? `<option ${action === `twinned` ? `selected` : ``} value="twinned">Twinned Spell</option>` : ``}
+                            ${(data.sorcPoints.value > 0 && checkAction(`Magical Guidance`)) ? `<option ${action === `guidance` ? `selected` : ``} value="guidance">Magical Guidance</option>` : ``}
                         </select>
                     </h3>
                 </div>
@@ -180,6 +182,7 @@ async function updateDialog()
                 case `extended` :
                 case `heightened` :
                 case `quickened` :
+                case `guidance`:
                 case `subtle` :
                     label = options = ``;
                     break;
@@ -221,7 +224,7 @@ async function updateDialog()
         let level = 0;
 
     log("Action     | ", html_data.action);
-        log("Secondary  | ", html_data.second);
+    log("Secondary  | ", html_data.second);
 
         switch(html_data.action)
         {
@@ -258,6 +261,9 @@ async function updateDialog()
                 break;
             case `heightened` :
                 editSorceryPoints(-3);
+                break;
+            case `guidance`:
+                editSorceryPoints(-1);
                 break;
             default : 
                 break;
@@ -324,6 +330,8 @@ async function executeItem(html_data, macroActor, data)
         coreText = coreText + `<i>${macroActor.data.name}</i> is using @Compendium[dnd5e.classfeatures.fXa0DMhoVLtbBu9l]{Subtle Spell} for <b>1</b> Sorcery Point`
     } else if (html_data.action == 'twinned') {
         coreText = coreText + `<i>${macroActor.data.name}</i> is using @Compendium[dnd5e.classfeatures.Qb391hakCfmH4w8p]{Twinned Spell} for <b>${html_data.second}</b> Sorcery Point`
+    } else if (html_data.action == 'guidance') {
+        coreText = coreText + `<i>${macroActor.data.name}</i> is using @Item[imh72jntA2MIHX75]{Magical Guidance} for <b>1</b> Sorcery Point`
     };
 
     let chatData = {
@@ -342,13 +350,13 @@ async function updateActor()
         let uses = duplicate(data.sorcPoints);
         // await macroActor.items.getName("Font of Magic").update({ "data.uses" : uses });
         await macroActor.items.getName("Sorcery Points").update({ "data.uses" : uses });
-        await macroActor.data.update({ "data.resources.primary" : {
-            "value": uses.value,
-            // "max": uses.max,
-            // "lr": true,
-            // "sr": false,
-            // "label": "Sorcery Points"
-        }});
+        // await macroActor.data.update({ "data.resources.primary" : {
+        //     "value": uses.value,
+        //     // "max": uses.max,
+        //     // "lr": true,
+        //     // "sr": false,
+        //     // "label": "Sorcery Points"
+        // }});
     }
 
     if(data.spellDiff)
