@@ -1,3 +1,7 @@
+// borrowed ideas from Sunbeam warpgate macro
+// code goes to itemmacro, item has to be configured to deal no damae and target self
+// and added effect lasting 1 turn with macro.ItemMacro CUSTOM @item.level
+
 const lastArg = args[args.length - 1];
 let tactor;
 if (lastArg.tokenId) tactor = canvas.tokens.get(lastArg.tokenId).actor;
