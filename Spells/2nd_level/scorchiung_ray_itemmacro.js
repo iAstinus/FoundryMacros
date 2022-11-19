@@ -15,23 +15,19 @@ let itemlevel = args[1];  //passed by @item in the DAE field
 async function selectTarget(missileNum) {
     content = `Choose target for ${missileNum} ray`;
 
-    new Dialog({
-        title: "Choose a target",
-        content: content,      
-        buttons: {
-            ok: { label: "Done", callback: () => action = "Done" },
-        },
-        default: "none",
+    return new Promise((resolve, reject) => {
+        const dialog = new Dialog({
+            title: "Choose a target",
+            content: content,      
+            buttons: {
+                ok: { label: "Done", callback: () => { resolve('Done'), tactor.items.getName("Scorching Ray (attack)").roll({"configureDialog": false}) } },
+            },
+            default: "none",
 
-        close: html => {
-            (async () => {
-            if (action == "Done") 
-            {
-                tactor.items.getName("Scorching Ray (attack)").roll({"configureDialog": false});
-            }
-            })();
-        }
-    }).render(true);
+            close: () => { reject() }
+            })
+        dialog.render(true, options = {width: 200});
+    })
 }
 
 if (args[0] === "on") {
@@ -110,13 +106,30 @@ if (args[0] === "on") {
             .randomRotation()
         .play()
 
-    for (var i = itemlevel; i >= 0; i--) {
-        await selectTarget(i+1);
+    for (var i = 0; i <= itemlevel; i++) {
+        new Sequence()
+            .effect()
+                .name(`${casterToken.id}_missile_effect_${i}`)
+                .file('jb2a.markers.02.greenorange')
+                .fadeIn(1000)
+                .attachTo(casterToken, {randomOffset: true})
+                .scale(1)
+                .persist()
+                .scaleToObject()
+                .randomRotation()
+            .play()
+    }
+
+    for (var i = 0; i <= itemlevel; i++) {
+        const dialogOutput = await selectTarget(i+1);
+        await Sequencer.Helpers.wait(2000);
+        await Sequencer.EffectManager.endEffects({ name: `${casterToken.id}_missile_effect_${i}` });
     }
 }
 if (args[0] === "off") {
 
     //Let's revert the token and remove the attack spell item
     await warpgate.revert(token.document)
+    await Sequencer.EffectManager.endEffects({ name: `${casterToken.id}_missile_effect_*`,  });
     
 }

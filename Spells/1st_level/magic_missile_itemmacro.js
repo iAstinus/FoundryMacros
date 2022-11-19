@@ -1,5 +1,5 @@
 // borrowed ideas from Sunbeam warpgate macro
-// code goes to itemmacro, item has to be configured to deal no damae and target self
+// code goes to itemmacro, item has to be configured to deal no damage and target self
 // and added effect lasting 1 turn with macro.ItemMacro CUSTOM @item.level
 
 const lastArg = args[args.length - 1];
@@ -12,26 +12,22 @@ let itemlevel = args[1];  //passed by @item in the DAE field
 
 // console.log(args);
 
-async function selectTarget(missileNum) {
+function selectTarget(missileNum) {
     content = `Choose target for ${missileNum} missile`;
+    
+    return new Promise((resolve, reject) => {
+        const dialog = new Dialog({
+            title: "Choose a target",
+            content: content,      
+            buttons: {
+                ok: { label: "Done", callback: () => { resolve('Done'), tactor.items.getName("Magic missile (missile)").roll({"configureDialog": false}) } },
+            },
+            default: "none",
 
-    new Dialog({
-        title: "Choose a target",
-        content: content,      
-        buttons: {
-            ok: { label: "Done", callback: () => action = "Done" },
-        },
-        default: "none",
-
-        close: html => {
-            (async () => {
-            if (action == "Done") 
-            {
-                tactor.items.getName("Magic missile (missile)").roll({"configureDialog": false});
-            }
-            })();
-        }
-    }).render(true);
+            close: () => { reject() }
+            })
+        dialog.render(true, options = {width: 200});
+    }) 
 }
 
 if (args[0] === "on") {
@@ -110,8 +106,8 @@ if (args[0] === "on") {
             .randomRotation()
         .play()
 
-    for (var i = itemlevel + 1; i >= 0; i--) {
-        await selectTarget(i+1);
+    for (var i = 0; i <= itemlevel + 1; i++) {
+        const dialogOutput = await selectTarget(i+1);
     }
 }
 if (args[0] === "off") {
