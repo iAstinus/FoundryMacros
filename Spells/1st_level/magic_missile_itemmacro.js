@@ -26,7 +26,7 @@ function selectTarget(missileNum) {
 
             close: () => { reject() }
             })
-        dialog.render(true, options = {width: 200});
+        dialog.render(true, options = {width: 200, left: canvas.screenDimensions[0] * 0.7});
     }) 
 }
 
@@ -107,12 +107,28 @@ if (args[0] === "on") {
         .play()
 
     for (var i = 0; i <= itemlevel + 1; i++) {
+        new Sequence()
+            .effect()
+                .name(`${casterToken.id}_missile_effect_${i}`)
+                .file('jb2a.markers.01.blueyellow')
+                .attachTo(casterToken, {randomOffset: true})
+                .scaleIn(0, 2500, {ease: "easeOutCubic", delay: 1000})
+                .scaleOut(0, 4000, {ease: "easeOutCubic"})
+                .persist()
+                .scaleToObject()
+                .randomRotation()
+            .play()
+    }
+
+
+    for (var i = 0; i <= itemlevel + 1; i++) {
         const dialogOutput = await selectTarget(i+1);
+        Sequencer.EffectManager.endEffects({ name: `${casterToken.id}_missile_effect_${i}` });
     }
 }
 if (args[0] === "off") {
 
     //Let's revert the token and remove the attack spell item
     await warpgate.revert(token.document)
-    
+    Sequencer.EffectManager.endEffects({ name: `${casterToken.id}_missile_effect_*`,  });
 }

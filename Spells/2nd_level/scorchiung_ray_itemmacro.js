@@ -26,7 +26,7 @@ async function selectTarget(missileNum) {
 
             close: () => { reject() }
             })
-        dialog.render(true, options = {width: 200});
+        dialog.render(true, options = {width: 200, left: canvas.screenDimensions[0] * 0.7});
     })
 }
 
@@ -113,6 +113,8 @@ if (args[0] === "on") {
                 .file('jb2a.markers.02.greenorange')
                 .fadeIn(1000)
                 .attachTo(casterToken, {randomOffset: true})
+                .scaleIn(0, 2500, {ease: "easeOutCubic", delay: 1000})
+                .scaleOut(0, 4000, {ease: "easeOutCubic"})
                 .scale(1)
                 .persist()
                 .scaleToObject()
@@ -122,8 +124,7 @@ if (args[0] === "on") {
 
     for (var i = 0; i <= itemlevel; i++) {
         const dialogOutput = await selectTarget(i+1);
-        await Sequencer.Helpers.wait(2000);
-        await Sequencer.EffectManager.endEffects({ name: `${casterToken.id}_missile_effect_${i}` });
+        Sequencer.EffectManager.endEffects({ name: `${casterToken.id}_missile_effect_${i}` });
     }
 }
 if (args[0] === "off") {
