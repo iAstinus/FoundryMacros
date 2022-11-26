@@ -1,3 +1,5 @@
+// credits to MrPrimate
+// can be replicateed with warpgate however
 //DAE Item Macro, pass spell level
 const lastArg = args[args.length-1]
 const tokenOrActor = await fromUuid(lastArg.actorUuid);
