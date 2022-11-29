@@ -22,7 +22,8 @@ data = {
     sorcPoints: {}, 
     cost : {"spell1": 2, "spell2": 3, "spell3": 5, "spell4": 6, "spell5": 7}, 
     spellDiff : [], 
-    sorcDiff : false
+    sorcDiff : false,
+    canOverflow: true
 };
 
 
@@ -40,10 +41,11 @@ function getActorData(actor) {
         ["Metamagic - Heightened Spell", 3], 
         ["Metamagic - Quickened Spell", 2], 
         ["Metamagic - Subtle Spell", 1], 
-        ["Metamagic - Twinned Spell", "spellLevel"],
-        ["Metamagic - Magical Guidance", 1],
+        ["Metamagic - Twinned Spell", "varies"],
         ["Metamagic - Seeking Spell", 2],
-        ["Metamagic - Transmuted Spell", 1]
+        ["Metamagic - Transmuted Spell", 1],
+        ["Magical Guidance", 1],
+        ["Bastion of Law", "varies"],
     ];
     sorceryItems.forEach(i => {
         let item = actor.items.getName(i[0]);
@@ -59,7 +61,7 @@ function getActorData(actor) {
 
     // check for resources
     const resources = actor.system.resources;
-    resourceCheck = Object.entries(resources).filter(
+    let resourceCheck = Object.entries(resources).filter(
         ([key, value]) => value.label === 'Sorcery Points');
     if (resourceCheck.length > 0) {
         data.sorcPoints[resourceCheck[0][0]] = resources[resourceCheck[0][0]]
@@ -83,8 +85,14 @@ function editSorcPoints(num)
 {
     let sorcPointsName = Object.keys(data.sorcPoints)[0];
 
-    data.sorcPoints[sorcPointsName].value = Math.clamped(
-        data.sorcPoints[sorcPointsName].value + num, 0, data.sorcPoints[sorcPointsName].max);
+    if (data.canOverflow) {
+        data.sorcPoints[sorcPointsName].value = Math.clamped(
+            data.sorcPoints[sorcPointsName].value + num, 0, 100); //100 sounds high enough
+    } else {
+        data.sorcPoints[sorcPointsName].value = Math.clamped(
+            data.sorcPoints[sorcPointsName].value + num, 0, data.sorcPoints[sorcPointsName].max);
+    }
+    
     data.sorcDiff = true;
 }
 
@@ -199,6 +207,33 @@ async function createChatMessage(eventType, spell) {
     ChatMessage.create(chatData, {});
 }
 
+async function playAnimation(tokenId, option) {
+    // console.log("--animation starts--");
+
+    token = canvas.tokens.get(tokenId)
+
+    if (option === 'default') {
+        // console.log("-default animation-");
+        
+        new Sequence()
+            .effect()
+                .file("jb2a.moonbeam.01.intro.rainbow")
+                .atLocation(token)
+                .fadeIn(100)
+                .fadeOut(200)
+                .duration(1200)
+                .waitUntilFinished(-500)
+            .effect()
+                .file("jb2a.toll_the_dead.green.shockwave")
+                .atLocation(token)
+                .fadeIn(500)
+                .fadeOut(500)
+                .scale(0.5)
+                .scaleIn(0, 500, {ease: "easeOutCubic", delay: 100})
+        .play();
+    }
+}
+
 async function runDialog(actor) {
 
     let _sorcPoints = getSorcPoints();    
@@ -248,7 +283,7 @@ async function runDialog(actor) {
             _available = true;
         } else if (i[0] === "Create Spell Slots") {
             _available = data.sorcPoints[Object.keys(data.sorcPoints)[0]].value > 0;
-        } else if (i[1] && i[1] === 'spellLevel') {
+        } else if (i[1] && i[1] === 'varies') {
             __label = `[ss sp]&nbsp;&nbsp;` + __label
             _available = data.sorcPoints[Object.keys(data.sorcPoints)[0]].value > 0;
         } else if (i[1]) {
@@ -309,7 +344,7 @@ async function runDialog(actor) {
                 var __spellLevel = parseInt(__spellName.charAt(0))
 
                 if (__spellName !== 'Pact') {
-                    var __available = data.sorcPoints[Object.keys(data.sorcPoints)[0]].value < data.sorcPoints[Object.keys(data.sorcPoints)[0]].max && data.spellSlots[key].value > 0;  
+                    var __available = (data.canOverflow || data.sorcPoints[Object.keys(data.sorcPoints)[0]].value < data.sorcPoints[Object.keys(data.sorcPoints)[0]].max) && data.spellSlots[key].value > 0;  
 
                     secondaryDialogInputs.push({
                         label: `[${__spellLevel} sp]&nbsp;&nbsp;&nbsp;&nbsp;<b>${__spellName}</b>&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size:20px">${getSpellDots(key)}</span>`,
@@ -346,7 +381,7 @@ async function runDialog(actor) {
                 var __spell = secondaryDialogData.inputs.filter(i => !!i)[0];
                 editSpellSlots(__spell, -1);
                 editSorcPoints(parseInt(__spell.charAt(5)));
-
+                playAnimation(lastArg.tokenId, "default");
                 await createChatMessage('Convert Spell Slots', __spell);
                 await updateActor(actor);
             }
@@ -404,6 +439,7 @@ async function runDialog(actor) {
                 var __spell = secondaryDialogData.inputs.filter(i => !!i)[0];
                 editSpellSlots(__spell, 1);
                 editSorcPoints(-1 * data.cost[__spell]);
+                playAnimation(lastArg.tokenId, "default");
                 await createChatMessage('Create Spell Slots', __spell);
                 await updateActor(actor);
             }
@@ -460,14 +496,60 @@ async function runDialog(actor) {
 
             // console.log(secondaryDialogData);
 
-            if (secondaryDialogData.buttons &&  secondaryDialogData.inputs.filter(i => !!i).length > 0) {
+            if (secondaryDialogData.buttons && secondaryDialogData.inputs.filter(i => !!i).length > 0) {
                 var __spell = secondaryDialogData.inputs.filter(i => !!i)[0];
                 editSorcPoints(__spell === 'spell0' ? -1 : -1 * __spell.charAt(5));
+                playAnimation(lastArg.tokenId, "default");
                 await rollItem("Metamagic - Twinned Spell");
                 await updateActor(actor);
             }
+        } else if (selected === "Bastion of Law") {
+            var sorcCost = [];
+            var maxSorcCost = _sorcPoints.value < 5 ? _sorcPoints.value : 5
+            for (i = 1; i <= maxSorcCost; i++) {
+                sorcCost.push(i)
+            };
+
+            var secondaryDialogInputs = [{
+                    label: `<tr><th style="width:50%;text-align:left"><label>Sorcery Points:</label></th> <td>${_sorcPoints.value}/${_sorcPoints.max}</td></tr>`,
+                    type: "info"
+                },{
+                    label: `<p style="text-align:center"><b>Spend sorcery points</b></p>`,
+                    type: "select",
+                    options: sorcCost
+                }];
+
+            let secondaryDialogData = await warpgate.menu({
+                inputs: secondaryDialogInputs,
+                buttons: [{
+                    label: "Done",
+                    value: true
+                }, {
+                    label: "Cancel",
+                    value: false
+                }],   
+            }, {
+                title: 'Bastion of Law',
+                render: true,
+                options: {
+                    width: '300',
+                    height: '100%',    
+              }
+            });
+
+            console.log(secondaryDialogData);
+
+            if (secondaryDialogData.buttons) {
+                var __cost = secondaryDialogData.inputs.filter(i => !!i)[0];
+                editSorcPoints(-1 * parseInt(__cost));
+                playAnimation(lastArg.tokenId, "default");
+                await rollItem("Bastion of Law");
+                await updateActor(actor);
+            }
+
         } else {
             editSorcPoints(-1 * data.items.filter(a => a.name === selected)[0].cost);
+            playAnimation(lastArg.tokenId, "default");
             await rollItem(selected);
             await updateActor(actor);
         }
