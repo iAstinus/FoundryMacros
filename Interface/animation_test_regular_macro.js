@@ -1,36 +1,38 @@
-let caster = canvas.tokens.get("CG0UrCKu8gh2MaW9");
+let casterToken = canvas.tokens.get("CG0UrCKu8gh2MaW9");
+let target = game.user.targets.first();
 
-for (var i = 0; i < 3; i++) {
-
-    // let options = {
-    //     align: "top-left", 
-    //     edge: "on", 
-    //     offset: {x: 0 , y: 0},
-    //     gridUnits: true
-    // }
-    // if (i < 3) {
-    //     options["align"] = "top-left";
-    //     options["offset"]["x"] = i*0.5;
-    //     options["offset"]["y"] = 0;
-    // } else if (i >= 3 && i < 5) {
-    //     options["align"] = "top-right";
-    //     options["offset"]["x"] = 0;
-    //     options["offset"]["y"] = (i-2)*0.5; 
-    // } else {
-    //     options["align"] = "bottom-right";
-    //     options["offset"]["x"] = (i-5)*0.5;
-    //     options["offset"]["y"] = 0;
-    // }
-
-    await new Sequence()
-        .effect()
-            .name(`${caster}_missile_effect_${i}`)
-            .file('jb2a.markers.01.blueyellow')
-            .attachTo(caster, {randomOffset: true})
-            .scaleIn(0, 2300, {ease: "easeOutCubic"})
-            .scaleOut(0, 2300, {ease: "easeOutCubic"})
-            .persist()
-            .scaleToObject()
-            .randomRotation()
-        .play()
-}
+new Sequence()
+    .effect()
+        .file("jb2a.extras.tmfx.runes.circle.outpulse.evocation")
+        .atLocation(casterToken)
+        .duration(2000)
+        .fadeIn(500)
+        .fadeOut(500)
+        .scale(0.5)
+        .waitUntilFinished(-1200)
+        .filter("Glow", { color: 0xffa500 })
+        .opacity(0.8)
+    .effect()
+        .file("jb2a.spear.melee.fire.orange")
+        .atLocation(casterToken)
+        .stretchTo(target)
+        .waitUntilFinished(-1200)
+        .fadeIn(500)
+        .fadeOut(1500)
+    .effect()
+        .file("jb2a.explosion.02.orange")
+        .atLocation(target)
+        .fadeIn(100)
+        .fadeOut(100)
+        .scale(0.5)
+    .effect()
+        .file("jb2a.flaming_sphere.200px.orange.02")
+        .scaleToObject(2)
+        .belowTokens()
+        .attachTo(target)
+        .duration(2000)
+        .fadeIn(500)
+        .fadeOut(1000)
+        .persist()
+        .name(`searing-smite-${target.id}`)
+    .play()
