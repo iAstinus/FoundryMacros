@@ -1,3 +1,4 @@
+// Heavilly rewritten Kekilla's Font of Magic macro
 // regular ItemMacro
 // requres warpgate, as it uses its warpgate.menu()
 // to fix width of the table in window I changed warpgate module.js 
@@ -178,7 +179,7 @@ function getSpellDots(spellName) {
 
 async function createChatMessage(eventType, spell) {
     let chatHeader = `
-        "<div class="dnd5e chat-card item-card midi-qol-item-card" 
+        <div class="dnd5e chat-card item-card midi-qol-item-card" 
             data-actor-id="${lastArg.actor.id}" 
             data-item-id="${lastArg.item._id}" 
             data-actor-uuid="${lastArg.actor.uuid}" 
@@ -202,7 +203,7 @@ async function createChatMessage(eventType, spell) {
 
     let chatData = {
         speaker: ChatMessage.getSpeaker(),
-        content: chatHeader + chatContent + `</p>`
+        content: chatHeader + chatContent
     };
     ChatMessage.create(chatData, {});
 }
