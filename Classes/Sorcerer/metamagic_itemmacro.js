@@ -544,6 +544,8 @@ async function runDialog(actor) {
                 var __cost = secondaryDialogData.inputs.filter(i => !!i)[0];
                 editSorcPoints(-1 * parseInt(__cost));
                 playAnimation(lastArg.tokenId, "default");
+
+                await lastArg.actor.setFlag('world', 'BastionOfLawCost', __cost)
                 await rollItem("Bastion of Law");
                 await updateActor(actor);
             }
