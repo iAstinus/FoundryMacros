@@ -1,5 +1,5 @@
 // credits to Tyreal74
-// on use itemmacro after active effects
+// first one is on use itemmacro
 
 const casterToken = canvas.tokens.get(args[0].tokenId);
 if (!casterToken) {
@@ -12,9 +12,10 @@ if (!target) {
     return;
 }
 
+
 new Sequence()
     .effect()
-        .file("jb2a.extras.tmfx.runes.circle.simple.necromancy")
+        .file("jb2a.extras.tmfx.runes.circle.simple.abjuration")
         .atLocation(casterToken)
         .fadeIn(500)
         .scaleIn(0, 300, {ease: "easeOutCubic"})
@@ -22,28 +23,37 @@ new Sequence()
         .duration(1000)
         .fadeOut(500)
     .effect()
-        .file("jb2a.cure_wounds.400px.red")
+        .file("jb2a.energy_strands.overlay.blue.01")
+        .atLocation(casterToken)
+        .fadeIn(500)
+        .scaleToObject(4)
+        .duration(1000)
+        .fadeOut(500)
+    .effect()
+        .file("jb2a.cure_wounds.400px.blue")
         .atLocation(casterToken)
         .fadeIn(500)
         .fadeOut(500)
         .scaleToObject(3)
         .duration(1500)
-        .waitUntilFinished(-800)
+        .waitUntilFinished(-1000)
     .effect()
-        .file("jb2a.impact.003.dark_red")
+        .file("jb2a.impact.003.blue")
         .atLocation(target)
         .fadeIn(500)
     .effect()
-        .file("jb2a.impact.004.dark_red")
+        .file("jb2a.healing_generic.loop.bluewhite")
         .atLocation(target)
         .fadeIn(500)
-    .file("jb2a.portals.horizontal.ring.dark_red")
-        .atLocation(target)
-        .fadeIn(500)
-        .scaleIn(0, 300, {ease: "easeOutCubic"})
-        .scaleToObject(2)
-        .duration(2500)
         .fadeOut(500)
+        .scaleToObject(3)
         .belowTokens()
-        .randomRotation()  
+        .opacity(0.5)
+    .effect()
+        .file("jb2a.healing_generic.burst.bluewhite")
+        .atLocation(target)
+        .fadeIn(500)
+        .fadeOut(500)
+        .scaleToObject(3)
+        .opacity(0.5)       
 .play();

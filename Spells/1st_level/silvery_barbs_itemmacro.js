@@ -1,0 +1,31 @@
+// credits to Tyreal74 for original macro, all effects replaced
+let casterToken = canvas.tokens.get(args[0].tokenId);
+let target = game.user.targets.first();
+
+new Sequence()
+
+.effect()
+    .file("jb2a.sacred_flame.source.yellow")
+    .atLocation(casterToken)
+    .duration(4000)
+    .fadeIn(500)
+    .fadeOut(500)
+    .scale(0.5)
+    .filter("Glow", { color: 0xFFA500 })
+    .waitUntilFinished(-2000)
+.effect()
+    .file("jb2a.butterflies.few.yellow")
+    .atLocation(target)
+    .fadeIn(500)
+    .fadeOut(500)
+    .waitUntilFinished(-4500)
+.effect()
+    .from(target)
+    .duration(2500)
+    .fadeIn(500)
+    .fadeOut(500)
+    .atLocation(target)
+    .scaleToObject()
+    .filter("Glow", { color: 0xFFA500 })
+    .scaleToObject()
+.play()

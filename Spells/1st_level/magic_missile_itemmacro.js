@@ -10,7 +10,7 @@ const casterToken = canvas.tokens.get(lastArg.tokenId);
 // const target = canvas.tokens.get(lastArg.tokenId);
 let itemlevel = args[1];  //passed by @item in the DAE field
 
-// console.log(args);
+console.log(casterToken);
 
 function selectTarget(missileNum) {
     content = `Choose target for ${missileNum} missile`;
@@ -83,7 +83,7 @@ if (args[0] === "on") {
     }
 
     //update the token and create the necessary attack spell
-    await warpgate.mutate(token.document, updates);
+    await warpgate.mutate(casterToken.document, updates, {}, {name: `${casterToken.id}_missile_effect`});
     ui.notifications.info(`Magic missile (missile) has been added to your At-Will spells.`);
     
     new Sequence()
@@ -129,6 +129,6 @@ if (args[0] === "on") {
 if (args[0] === "off") {
 
     //Let's revert the token and remove the attack spell item
-    await warpgate.revert(token.document)
+    await warpgate.revert(casterToken.document, `${casterToken.id}_missile_effect`);
     Sequencer.EffectManager.endEffects({ name: `${casterToken.id}_missile_effect_*`,  });
 }

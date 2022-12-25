@@ -6,9 +6,12 @@ if (!casterToken) {
     return;
 }
 //get the template id from the canvas and its positions.
-const templatePosition = canvas.templates.placeables[canvas.templates.placeables.length - 1];
+// const templateLocation = canvas.templates.placeables[canvas.templates.placeables.length - 1];
+const spellTemplate = canvas.templates.get(args[0].templateId);
 //get an array of the targets within the tempalte area.
 const targetLocations = Array.from(game.user.targets);
+
+// console.log(spellTemplate);
 
 let sequence = new Sequence();
 
@@ -25,23 +28,23 @@ sequence.effect()
 sequence.effect()
     .file("jb2a.fireball.beam.orange")
     .atLocation(casterToken)
-    .stretchTo(templatePosition)
+    .stretchTo(spellTemplate)
     .waitUntilFinished(-1800);
 
 sequence.effect()
     .file("jb2a.fireball.explosion.orange")
-    .atLocation(templatePosition)
+    .atLocation(spellTemplate)
     .scale(1.4)
     .waitUntilFinished(-2100);
 
 //blast mark from the forgotten adventures site, you need to find your own blast mark or use the agreed one by JB2A and FA
 sequence.effect()
     .file("jb2a.impact.ground_crack.still_frame.01")
-    .atLocation(templatePosition)
+    .atLocation(spellTemplate)
     .fadeIn(300)
     .duration(10000)
     .fadeOut(350)
-    .name(`fireball-impact-${templatePosition.data._id}`)
+    .name(`fireball-impact-${spellTemplate.document.data._id}`)
     .belowTokens();
 
 //loop through targets and play only if failed save (to do)
@@ -54,5 +57,6 @@ for (let targetLoc of targetLocations) {
         .fadeOut(500)
         .duration(2000);
 }
-sequence.thenDo(() => canvas.scene.deleteEmbeddedDocuments("MeasuredTemplate", [templatePosition.data._id]));
-sequence.play();
+// sequence.thenDo(() => canvas.scene.deleteEmbeddedDocuments("MeasuredTemplate", [templatePosition.data._id]));
+await sequence.play();
+await spellTemplate.document.delete()
