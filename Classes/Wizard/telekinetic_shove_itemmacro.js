@@ -3,11 +3,11 @@
 // Requires Midiqol, warpgate, and item macro modules
 
 let combatTime;
-if (game.combat) {
-    combatTime = `${game.combat.id} - 100*${game.combat.round} + ${game.combat.turn}`;
-    const lastTime = actor.getFlag('world', 'TelekineticShoveUsed');
-    if (combatTime === lastTime) return;
-}
+// if (game.combat) {
+//     combatTime = `${game.combat.id} - 100*${game.combat.round} + ${game.combat.turn}`;
+//     const lastTime = actor.getFlag('world', 'TelekineticShoveUsed');
+//     if (combatTime === lastTime) return;
+// }
 
 if(args[0].failedSaves.length !==0) applyTargetMove(combatTime);
 else {
@@ -23,12 +23,12 @@ async function applyTargetMove(time) {
     const maxRange = 5;
     let distance = 0;
     let ray;
+    console.log(targetCenter);
     const checkDistance = async (crosshairs) => {
         while (crosshairs.inFlight) {
                await warpgate.wait(100);
                ray = new Ray(targetCenter, crosshairs);
                distance = canvas.grid.measureDistances([{ ray }], { gridSpaces: true })[0]
-            //console.log(ray)
                if(canvas.grid.isNeighbor(ray.A.x/canvas.grid.w,ray.A.y/canvas.grid.w,ray.B.x/canvas.grid.w,ray.B.y/canvas.grid.w) === false || canvas.scene.tokens.some(i=>i.object.center.x===ray.B.x && i.object.center.y===ray.B.y)) {
                 crosshairs.icon = 'icons/magic/air/wind-vortex-swirl-purple.webp'
             } 
@@ -63,6 +63,6 @@ async function applyTargetMove(time) {
 
     const mutationData = { token: {x: newCenter.x, y: newCenter.y}};
     await warpgate.mutate(targetDoc, mutationData, {}, {permanent: true});
-    if(game.combat) await actor.setFlag('world', 'TelekineticShoveUsed', `${time}`);
-    else if(!game.combat && actor.getFlag('world','TelekineticShoveUsed')) await actor.unsetFlag('world','TelekineticShoveUsed');
+    // if(game.combat) await actor.setFlag('world', 'TelekineticShoveUsed', `${time}`);
+    // else if(!game.combat && actor.getFlag('world','TelekineticShoveUsed')) await actor.unsetFlag('world','TelekineticShoveUsed');
 }
