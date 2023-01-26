@@ -31,6 +31,7 @@ if (args[0] === 'on') {
             .scaleToObject(1.5)
             .belowTokens()
             .filter("Glow", { color: 0x611610 })
+            .attachTo(casterToken)
 
     
     //play animation
