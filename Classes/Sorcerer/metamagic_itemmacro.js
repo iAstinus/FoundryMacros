@@ -289,7 +289,7 @@ async function runDialog(actor) {
             _available = data.sorcPoints[Object.keys(data.sorcPoints)[0]].value > 0;
         } else if (i[1]) {
             __label = `[${i[1]} sp]&nbsp;&nbsp;` + __label
-            _available = data.sorcPoints[Object.keys(data.sorcPoints)[0]].value > i[1];
+            _available = data.sorcPoints[Object.keys(data.sorcPoints)[0]].value >= i[1];
         };
 
         sorcInputs.push({
@@ -508,7 +508,7 @@ async function runDialog(actor) {
             var sorcCost = [];
             var maxSorcCost = _sorcPoints.value < 5 ? _sorcPoints.value : 5
             for (i = 1; i <= maxSorcCost; i++) {
-                sorcCost.push(i)
+                sorcCost.push(i.toString())
             };
 
             var secondaryDialogInputs = [{
