@@ -149,6 +149,9 @@ async function updateActor(actor)
 
 function getSorcPoints() {
     const params = data.sorcPoints[Object.keys(data.sorcPoints)[0]];
+    if (!params.value) {
+        params['value'] = 0
+    }
     return { value: params.value, max: params.max }
 }
 
@@ -508,7 +511,7 @@ async function runDialog(actor) {
             var sorcCost = [];
             var maxSorcCost = _sorcPoints.value < 5 ? _sorcPoints.value : 5
             for (i = 1; i <= maxSorcCost; i++) {
-                sorcCost.push(i.toString())
+                sorcCost.push({"value": i, "html": i.toString()})
             };
 
             var secondaryDialogInputs = [{
