@@ -88,8 +88,10 @@ const ammoItem = args[0].actor.items.getName("Evellyn Bolt");
 
 let ammoOptions = [];
 for (var i = ammoItem.system.uses.value; i > 0; i--) {
-    ammoOptions.push(i)
+    ammoOptions.push({"value": i, "html": i.toString()})
 };
+
+ammoOptions.push({"value": 0, "html": 0});
 
 const dialogData = await warpgate.menu(
     {
@@ -97,7 +99,6 @@ const dialogData = await warpgate.menu(
             label: "How many arrows to shoot:",
             type: "select",
             options: ammoOptions,
-            value: "test"
         }],
         buttons: [{
             label: "Shoot",
@@ -160,7 +161,6 @@ if (dialogData.buttons === 'make_reload') {
 } else if (dialogData.buttons === 'make_shot') {
     if (dialogData.inputs[0]) {
         for (var i = dialogData.inputs[0]; i > 0; i--) {
-            
             // await ammoItem.roll({"configureDialog": false});
             await MidiQOL.completeItemUse(ammoItem, {}, {"configureDialog": false})
         }
