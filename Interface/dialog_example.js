@@ -25,8 +25,11 @@ const results = await warpgate.menu({
     }, {
         label: "selector: select",
         type: "select",
-        options: [1, 2, 3, 4, 5],
-        value: true
+        options: [
+            {"value":1, "html": "1"}, 
+            {"value":2, "html": "2"},
+            {"value":5, "html": "5"},
+        ],
     }],
     buttons: [{
         label: "Yes",
