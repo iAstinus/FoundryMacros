@@ -3,6 +3,7 @@
 
 const casterToken = canvas.tokens.get(args[0].tokenId);
 const template = canvas.templates.placeables[canvas.templates.placeables.length-1];
+
 if (!casterToken) {
     ui.notifications.warn("Please select a valid token to use this ability.");
     return;

@@ -48,7 +48,6 @@ new Sequence()
 
 // Handling criticals
 if (args[0].isCritical === true) {
-
     return{damageRoll: `${spellLevel*4}d6[thunder]`, flavor: "Thunderous Smite"}
 } else {
     return{damageRoll: `${spellLevel*2}d6[thunder]`, flavor: "Thunderous Smite"}

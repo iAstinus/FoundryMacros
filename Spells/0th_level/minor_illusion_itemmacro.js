@@ -1,8 +1,8 @@
 // credits to Tyreal74
-// needs nor Illusion actor, using Illusion marker jb2a asset
-
+// needs Illusion actor, using Illusion marker jb2a asset
 
 const casterToken = canvas.tokens.get(args[0].tokenId);
+
 if (!casterToken) {
     ui.notifications.warn("Please select a valid token to use this ability.");
     return;
