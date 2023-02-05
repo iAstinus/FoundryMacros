@@ -41,12 +41,12 @@ template.document.update({
         "perfect-vision": {
             "visionLimitation": {
                 "enabled": true,
-                "sight": 5
+                "sight": 1
             }
         },
         "tokenmagic": {
             "templateData": {
-                "opacity": 0.95
+                "opacity": 0.8
             }
         }
     },
