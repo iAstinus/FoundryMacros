@@ -6,10 +6,15 @@ const ammoItem = args[0].actor.items.getName("Evellyn Bolt");
 
 let ammoOptions = [];
 for (var i = ammoItem.system.uses.value; i > 0; i--) {
-    ammoOptions.push({"value": i, "html": i.toString()})
+    // ammoOptions.push({"value": i, "html": i.toString()})
+    ammoOptions.push({"value": i.toString()})
 };
 
-ammoOptions.push({"value": 0, "html": 0});
+// ammoOptions.push({"value": 0, "html": 0});
+ammoOptions.push({"value": "0"})
+
+console.log(ammoOptions);
+
 
 const dialogData = await warpgate.menu(
     {
